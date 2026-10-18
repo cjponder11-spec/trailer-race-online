@@ -1,0 +1,9 @@
+
+services:
+  - type: web
+    name: trailer-race-online
+    runtime: node
+    plan: free
+    rootDir: trailer-race-server
+    buildCommand: npm install
+    startCommand: npm start
