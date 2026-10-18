@@ -1,5 +1,5 @@
 
-services:
+services: render.yaml
   - type: web
     name: trailer-race-online
     runtime: node
