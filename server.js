@@ -59,7 +59,7 @@ function simulate(room,dt){
 const pace = 0.22 + Math.sin(room.time * 0.35) * 0.025;
 room.angle -= pace * dt;
 
-  const pace=clamp(.22+(di.up?0.09:0)-(di.down?0.11:0),.12,.34);room.angle-=pace*dt;
+  
   const trailer=trailerState(room);
   const humans=new Map(room.players.filter(p=>p.role==='chaser').map(p=>[p.carIndex,p]));
   for(let i=0;i<MAX_CHASERS;i++){
