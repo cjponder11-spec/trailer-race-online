@@ -2,7 +2,7 @@
 const WebSocket = require('ws');
 const { randomUUID } = require('crypto');
 const PORT = Number(process.env.PORT || 3000);
-const MAX_PLAYERS = 7, MAX_CHASERS = 6, TICK_MS = 50;
+const MAX_PLAYERS = 7, MAX_CHASERS = 7, TICK_MS = 50;
 const wss = new WebSocket.Server({ port: PORT });
 const rooms = new Map();
 const wrap = a => (a + Math.PI * 2) % (Math.PI * 2);
@@ -11,14 +11,19 @@ const rndCode = () => Math.random().toString(36).slice(2, 6).toUpperCase();
 function send(ws, msg) { if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(msg)); }
 function broadcast(room, msg) { for (const p of room.players) send(p.ws, msg); }
 function publicLobby(room) { return { type:'lobby', room:room.code, phase:room.phase, players:room.players.map(p=>({id:p.id,name:p.name,ready:p.ready,role:p.role,carIndex:p.carIndex})), isHost:false }; }
+
 function assignRoles(room) {
   const ps = room.players;
-  if (!ps.length) return;
-  const driver = ps[room.round % ps.length];
-  let carIndex=0;
-  for (const p of ps) { if (p===driver) { p.role='trailer'; p.carIndex=null; } else { p.role='chaser'; p.carIndex=carIndex++; } }
-  room.driverId=driver.id;
+  let carIndex = 0;
+
+  for (const p of ps) {
+    p.role = 'chaser';
+    p.carIndex = carIndex++;
+  }
+
+  room.driverId = null;
 }
+
 function broadcastLobby(room) {
   const base=publicLobby(room);
   for (const p of room.players) send(p.ws,{...base,isHost:p.id===room.hostId});
@@ -50,7 +55,10 @@ function simulate(room,dt){
   room.weather.rain=damp(room.weather.rain,rain,1.4);room.weather.fog=damp(room.weather.fog,fog,1.1);room.weather.cloud=damp(room.weather.cloud,cloud,1);room.weather.wet=damp(room.weather.wet,rain>.12?1:0,rain>.12?.16:.045);room.weather.phase=phase;
   const wet=room.weather.wet;
   // Driver controls trailer pace and slight lane position. Direction remains the game's established orbit direction.
-  const driver=room.players.find(p=>p.id===room.driverId);const di=driver?.input||{};
+  
+const pace = 0.22 + Math.sin(room.time * 0.35) * 0.025;
+room.angle -= pace * dt;
+
   const pace=clamp(.22+(di.up?0.09:0)-(di.down?0.11:0),.12,.34);room.angle-=pace*dt;
   const trailer=trailerState(room);
   const humans=new Map(room.players.filter(p=>p.role==='chaser').map(p=>[p.carIndex,p]));
