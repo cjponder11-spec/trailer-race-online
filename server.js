@@ -26,8 +26,7 @@ function broadcastLobby(room) {
 function newRoom(code, mode) { return {code,mode,players:[],hostId:null,phase:'lobby',round:0,time:0,angle:.55,weather:{rain:0,fog:0,cloud:0,wet:0,phase:'CLEAR'},cars:[],lastTick:Date.now(),countdown:null,results:[]}; }
 function initRace(room) {
   room.phase='race'; room.time=0; room.angle=.55; room.weather={rain:0,fog:0,cloud:0,wet:0,phase:'CLEAR'};
-  room.cars=Array.from({length:MAX_CHASERS},(_,i)=>({x:(i%3-1)*2.65,z:34+Math.floor(i/3)*4.2,heading:0,speed:0,boarded:false,touchedRamp:false,score:0,aiPhase:i*1.31}));
-  assignRoles(room);
+ room.cars=Array.from({length:MAX_CHASERS},(_,i)=>({x:Math.sin(i*Math.PI/3)*15,z:34+Math.cos(i*Math.PI/3)*15,heading:0,speed:0,boarded:false,touchedRamp:false,score:0,aiPhase:i*1.31}));
   for (const p of room.players) { p.input={}; p.ready=false; send(p.ws,{type:'raceStart',role:p.role,carIndex:p.carIndex,round:room.round}); }
   room.lastTick=Date.now();
 }
