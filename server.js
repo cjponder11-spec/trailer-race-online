@@ -76,6 +76,21 @@ room.angle -= pace * dt;
       const desired=clamp(10.4+Math.sin(c.aiPhase*.8+i)*.45+(dist<20?-2:1)-wet*1.3,4.6,14.2);c.speed+=(desired-c.speed)*(1-Math.exp(-2.4*dt));
     }
     c.x+=-Math.sin(c.heading)*c.speed*dt;c.z+=-Math.cos(c.heading)*c.speed*dt;
+    for (let j = 0; j < room.cars.length; j++) {
+  if (j === i) continue;
+  const other = room.cars[j];
+  const dx = c.x - other.x;
+  const dz = c.z - other.z;
+  const dist = Math.hypot(dx, dz);
+  const minDist = 2.8;
+
+  if (dist > 0 && dist < minDist) {
+    const push = (minDist - dist) * 0.5;
+    c.x += (dx / dist) * push;
+    c.z += (dz / dist) * push;
+    c.speed = Math.max(0, c.speed - 1.5);
+  }
+}
     const rad=Math.hypot(c.x/73,c.z/47);if(rad>1){c.x*=.99;c.z*=.99;c.speed*=.7;}
     if(Math.hypot(c.x/8,c.z/5)<1){c.x*=1.03;c.z*=1.03;}
     // Basic server-authoritative ramp/boarding detection, evaluated against the trailer's moving local frame.
