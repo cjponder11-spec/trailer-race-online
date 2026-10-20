@@ -112,7 +112,7 @@ document.getElementById('joinRoom').onclick=()=>connectOnline('join',document.ge
 document.getElementById('readyButton').onclick=()=>{net.ready=!net.ready;netSend({type:'ready',ready:net.ready});document.getElementById('readyButton').textContent=net.ready?'✓ READY (CLICK TO UNREADY)':'✓ READY'};
 document.getElementById('startOnline').onclick=()=>{if(net.phase==='results')netSend({type:'rematch'});else netSend({type:'start'});};
 document.getElementById('leaveOnline').onclick=()=>{netSend({type:'leave'});if(net.ws)net.ws.close();net.room=null;showScreen('start')};
-setInterval(()=>{if(!net.connected||net.phase!=='race')return;netSend({type:'input',input:{up:!!(keys.w||keys.arrowup),down:!!(keys.s||keys.arrowdown),left:!!(keys.a||keys.arrowleft),right:!!(keys.d||keys.arrowright),boost:!!keys[' '],brake:!!(keys.shift||keys.arrowdown)}})},50);
+setInterval(()=>{if(!net.connected||net.phase!=='race')return;netSend({type:'input',input:{up:!!(keys.w||keys.arrowup),down:!!(keys.s||keys.arrowdown),left:!!(keys.a||keys.arrowleft),right:!!(keys.d||keys.arrowright),boost:!!keys[' '],brake:!!(keys.shift||keys.arrowdown)}})},33);
 function applyNetworkSnapshot(){const s=net.snapshot;if(!s||net.phase!=='race'||!s.cars)return;for(let i=0;i<Math.min(cars.length,s.cars.length);i++){const v=s.cars[i],c=cars[i];c.obj.position.x += (v.x - c.obj.position.x) * 0.55;
 c.obj.position.y += ((v.boarded ? 1.6 : 0.1) - c.obj.position.y) * 0.35;
 c.obj.position.z += (v.z - c.obj.position.z) * 0.35;c.obj.rotation.y=v.heading;c.speed=v.speed;c.boarded=!!v.boarded;}if(s.trailer){trailer.position.x += (s.trailer.x - trailer.position.x) * 0.55;
