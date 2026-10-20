@@ -2,7 +2,7 @@
 const WebSocket = require('ws');
 const { randomUUID } = require('crypto');
 const PORT = Number(process.env.PORT || 3000);
-const MAX_PLAYERS = 7, MAX_CHASERS = 7, TICK_MS = 50;
+const MAX_PLAYERS = 7, MAX_CHASERS = 7, TICK_MS =33;
 const wss = new WebSocket.Server({ port: PORT });
 const rooms = new Map();
 const wrap = a => (a + Math.PI * 2) % (Math.PI * 2);
